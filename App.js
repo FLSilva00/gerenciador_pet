@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Text, View, StyleSheet, FlatList, Button, TouchableOpacity, TextInput } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 function Gerenciar({ navigation }) {
   const [produtos, setProdutos] = useState([]);
@@ -12,7 +14,7 @@ function Gerenciar({ navigation }) {
   };
 
   const atualizarProduto = (id, nome, quantidade, preco) => {
-    setProdutos(produtos.map(produto => 
+    setProdutos(produtos.map(produto =>
       produto.id === id ? { ...produto, title: nome, quantidade, preco } : produto
     ));
   };
@@ -85,16 +87,55 @@ function Cadastro({ route, navigation }) {
   );
 }
 
-const Stack = createStackNavigator();
-
-function App() {
+function Pedidos() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Gerenciar" component={Gerenciar} options={{ title: 'Gerenciar Produtos' }} />
-        <Stack.Screen name="Cadastro" component={Cadastro} options={{ title: 'Cadastro de Produto' }} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Ver pedidos</Text>
+    </View>
+  );
+}
+
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+function GerenciarStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Gerenciar" component={Gerenciar} options={{ title: 'Gerenciar Produtos' }} />
+      <Stack.Screen name="Cadastro" component={Cadastro} options={{ title: 'Cadastro de Produto' }} />
+    </Stack.Navigator>
+  );
+}
+
+function MyTabs() {
+  return (
+    <Tab.Navigator
+      initialRouteName="Gerenciar"
+      screenOptions={{
+        tabBarActiveTintColor: 'blue',
+      }}
+    >
+      <Tab.Screen
+        name="Home"
+        component={GerenciarStack}
+        options={{
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="home" color={color} size={size} /> // Ícone de casinha
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Pedidos"
+        component={Pedidos}
+        options={{
+          tabBarLabel: 'Pedidos',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="order-bool-descending" color={color} size={size} />
+          ),
+        }}
+      />
+    </Tab.Navigator>
   );
 }
 
@@ -152,4 +193,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default function App() {
+  return (
+    <NavigationContainer>
+      <MyTabs />
+    </NavigationContainer>
+  );
+}
